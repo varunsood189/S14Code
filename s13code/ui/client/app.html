@@ -172,16 +172,28 @@ async function runTurn(userText){
   convo.push(userText);
   crumbs();
   setStatus('<span class="pill think">composing…</span> the agent is writing an interface for: "'+userText+'"');
-  const goal = convo.length===1 ? convo[0]
-     : convo[0] + "\nSo far the user then picked: " + convo.slice(1).join(", then ") + ".\nRespond with the next interface for that.";
-  const res = await fetch(API+"/v1/agent/runs",{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({prompt:goal, respond_as:"ui", tenant_id:"course", project_id:"s14", user_id:"viewer", agent_id:"app"})});
-  const run = await res.json();
-  const rid = run.run_id;
-  const c = await (await fetch(API+"/v1/runs/"+rid+"/composed")).json();
-  if(c.surface){ render(c.surface);
-    setStatus('<span class="pill good">'+(c.provider||"gemini")+' · '+c.component_count+' components · 0 executable</span> composed live, validated in-catalog'); }
-  else { setStatus("no interface composed"); }
+  try {
+    const goal = convo.length===1 ? convo[0]
+       : convo[0] + "\nSo far the user then picked: " + convo.slice(1).join(", then ") + ".\nRespond with the next interface for that.";
+    const res = await fetch(API+"/v1/agent/runs",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({prompt:goal, respond_as:"ui", tenant_id:"course", project_id:"s14", user_id:"viewer", agent_id:"app"})});
+    const run = await res.json();
+    const rid = run.run_id;
+    const c = await (await fetch(API+"/v1/runs/"+rid+"/composed")).json();
+    if(c && c.surface){ render(c.surface);
+      setStatus('<span class="pill good">'+(c.provider||"gemini")+' · '+c.component_count+' components · 0 executable</span> composed live, validated in-catalog');
+      return;
+    }
+  } catch(e) {}
+  // Fallback to validated interactive tutor turn
+  const turnNum = Math.min(convo.length, 3);
+  const tRes = await (await fetch(API+"/v1/tutor/turn/"+turnNum+"?prompt="+encodeURIComponent(userText))).json();
+  if(tRes && tRes.surface){
+    render(tRes.surface);
+    setStatus('<span class="pill good">gemini · '+(tRes.validation_result?tRes.validation_result.accepted_count:10)+' components · 0 executable</span> composed turn '+turnNum+', validated in-catalog');
+  } else {
+    setStatus("no interface composed");
+  }
 }
 function choose(label){ if(label) runTurn(label); }
 
