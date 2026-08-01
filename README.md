@@ -1,8 +1,10 @@
 # S14Code
 
-[![Demo Video](https://img.shields.io/badge/Demo_Video-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/ng4UzM0rGmE)
+[![Session 14 Generative UI Demo Video](https://img.youtube.com/vi/ng4UzM0rGmE/maxresdefault.jpg)](https://youtu.be/ng4UzM0rGmE)
 
-**Demo Video**: [https://youtu.be/ng4UzM0rGmE](https://youtu.be/ng4UzM0rGmE)
+▶️ **Watch Demo Video**: [https://youtu.be/ng4UzM0rGmE](https://youtu.be/ng4UzM0rGmE)
+
+---
 
 `S14Code` is the Session 14 runtime. It is the **entire Session 13 agent
 runtime** — a live task graph, scoped and provenance-bearing memory, Rohan's
