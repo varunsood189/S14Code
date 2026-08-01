@@ -225,6 +225,7 @@ async def client(run_id: str):
     return _CLIENT.read_text().replace("__RUN_ID__", run_id)
 
 
+@router.get("/", response_class=HTMLResponse)
 @router.get("/app", response_class=HTMLResponse)
 @router.get("/app/", response_class=HTMLResponse)
 async def app_viewer():
